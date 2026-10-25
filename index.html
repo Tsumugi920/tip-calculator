@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>小费计算器 · Tip Calculator</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>">
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <main class="app">
+    <header class="app-header">
+      <h1>💰 小费计算器</h1>
+      <p class="subtitle">输入账单金额、小费比例与人数，实时算出小费、总计和人均分摊</p>
+    </header>
+
+    <div class="grid">
+      <!-- 左：输入 -->
+      <section class="card">
+        <h2>账单信息</h2>
+
+        <div class="field">
+          <label for="bill">账单金额（¥）</label>
+          <input type="number" id="bill" min="0" step="0.01" placeholder="0.00" inputmode="decimal" autocomplete="off">
+        </div>
+
+        <div class="field">
+          <span class="field-label" id="tip-label">小费比例</span>
+          <div class="chips" id="tip-chips" role="group" aria-labelledby="tip-label">
+            <button type="button" class="chip" data-tip="0">0%</button>
+            <button type="button" class="chip" data-tip="10">10%</button>
+            <button type="button" class="chip active" data-tip="15">15%</button>
+            <button type="button" class="chip" data-tip="18">18%</button>
+            <button type="button" class="chip" data-tip="20">20%</button>
+            <button type="button" class="chip" data-tip="25">25%</button>
+          </div>
+          <label for="tip">自定义比例</label>
+          <div class="tip-inputs">
+            <input type="range" id="tip-range" min="0" max="50" step="1" value="15" aria-label="小费比例滑块">
+            <span class="tip-number">
+              <input type="number" id="tip" min="0" max="100" step="0.5" value="15" autocomplete="off"><span>%</span>
+            </span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="people">用餐人数</label>
+          <div class="stepper">
+            <button type="button" class="icon-btn" id="people-minus" aria-label="减少人数">−</button>
+            <input type="number" id="people" min="1" max="99" step="1" value="2" autocomplete="off">
+            <button type="button" class="icon-btn" id="people-plus" aria-label="增加人数">+</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="rounding">取整方式</label>
+          <select id="rounding">
+            <option value="none">不取整</option>
+            <option value="total-nearest">总计四舍五入到元</option>
+            <option value="person-nearest">人均四舍五入到元</option>
+            <option value="person-up">人均向上取整（多付不少付）</option>
+          </select>
+        </div>
+
+        <div class="actions">
+          <button type="button" id="save-bill" class="btn primary">保存为账单</button>
+          <button type="button" id="reset" class="btn">清空输入</button>
+        </div>
+      </section>
+
+      <!-- 右：结果 -->
+      <section class="card result" aria-live="polite">
+        <h2>计算结果</h2>
+        <div class="result-main">
+          <div class="result-item big">
+            <span class="result-label">人均分摊</span>
+            <span class="result-value" id="per-person">¥0.00</span>
+          </div>
+          <div class="result-row">
+            <div class="result-item">
+              <span class="result-label">小费</span>
+              <span class="result-value" id="tip-amount">¥0.00</span>
+            </div>
+            <div class="result-item">
+              <span class="result-label">总计</span>
+              <span class="result-value" id="total">¥0.00</span>
+            </div>
+          </div>
+        </div>
+        <ul class="breakdown">
+          <li><span>每人小费</span><span id="tip-per-person">¥0.00</span></li>
+          <li><span>每人账单</span><span id="bill-per-person">¥0.00</span></li>
+          <li><span>账单总额</span><span id="bill-total">¥0.00</span></li>
+        </ul>
+      </section>
+    </div>
+
+    <!-- 账单记录与数据管理 -->
+    <section class="card">
+      <div class="section-head">
+        <h2>账单记录<span class="count" id="bill-count"></span></h2>
+        <div class="data-actions">
+          <button type="button" id="export" class="btn small">导出 JSON</button>
+          <button type="button" id="import" class="btn small">导入 JSON</button>
+          <input type="file" id="import-file" accept=".json,application/json" hidden>
+          <button type="button" id="load-samples" class="btn small">恢复示例账单</button>
+          <button type="button" id="clear-bills" class="btn small danger">清空记录</button>
+        </div>
+      </div>
+      <ul class="bill-list" id="bill-list"></ul>
+      <p class="empty-hint" id="empty-hint" hidden>还没有账单记录。填好左侧表单后点「保存为账单」，或点「恢复示例账单」载入 3 条示例。</p>
+    </section>
+
+    <footer class="app-footer">所有数据只保存在本机浏览器（localStorage）· 支持导出 / 导入 JSON 备份</footer>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
